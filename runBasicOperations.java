@@ -1,6 +1,6 @@
 import java.util.Scanner;
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.ArrayList;
+import java.util.List;
 
 public class runBasicOperations {
     static void execute(Scanner scanner, CalculatorSystem calculatorSystem) {
@@ -24,6 +24,7 @@ public class runBasicOperations {
                 System.out.println("式が空です。もう一度入力してください。");
                 continue;
             }
+            
 
             try {
                 double result = evaluateExpression(expression, calculatorSystem);
@@ -34,86 +35,80 @@ public class runBasicOperations {
         }
     }
 
-    private static double evaluateExpression(String expression, CalculatorSystem calculatorSystem) {
-        Deque<Double> values = new ArrayDeque<>();
-        Deque<Character> operators = new ArrayDeque<>();
-        int i = 0;
+    private static double evaluateExpression(String expression, CalculatorSystem calculatorSystem) {        //numberとoperatorを分割してリストに格納する
+        String expr = expression.replaceAll("\\s+", "");
+        if (expr.isEmpty()) {
+            throw new IllegalArgumentException("式が空です。");
+        }
 
-        while (i < expression.length()) {
-            char c = expression.charAt(i);
-            
-            if (Character.isWhitespace(c)) {
-                i++;
-                
-                continue;
-            }
+        List<Double> numbers = new ArrayList<>();
+        List<Character> operators = new ArrayList<>();
+        StringBuilder token = new StringBuilder();
 
+        for (int i = 0; i < expr.length(); i++) {
+            char c = expr.charAt(i);
             if (Character.isDigit(c) || c == '.') {
-                int start = i;
-                while (i < expression.length()) {
-                    char current = expression.charAt(i);
-                    if (!Character.isDigit(current) && current != '.') {
-                        break;
-                    }
-                    i++;
-                }
-                String numberToken = expression.substring(start, i);
-                try {
-                    values.push(Double.parseDouble(numberToken));
-                } catch (NumberFormatException e) {
-                    throw new IllegalArgumentException("数値の形式が正しくありません: " + numberToken);
-                }
-                continue;
-            }
-            
-
-            if (isOperator(c)) {
-                
-                while (!operators.isEmpty() && precedence(operators.peek()) >= precedence(c)) {
-                    applyTopOperation(values, operators, calculatorSystem);
-                }
-                operators.push(c);
-                i++;
+                token.append(c);
                 continue;
             }
 
-            throw new IllegalArgumentException("使用できない文字です: " + c);
+            if (!isOperator(c)) {
+                throw new IllegalArgumentException("使用できない文字です: " + c);
+            }
+
+            if (token.length() == 0) {
+                throw new IllegalArgumentException("式の形式が正しくありません。");
+            }
+
+            numbers.add(parseNumber(token.toString()));
+            token.setLength(0);
+            operators.add(c);
         }
 
-        while (!operators.isEmpty()) {
-            applyTopOperation(values, operators, calculatorSystem);
-        }
-
-        if (values.size() != 1) {
+        if (token.length() == 0) {
             throw new IllegalArgumentException("式の形式が正しくありません。");
         }
+        numbers.add(parseNumber(token.toString()));
 
-        return values.pop();
+       
+        int i = 0;
+        while (i < operators.size()) {
+            char op = operators.get(i);
+            if (op == '*' || op == '/') {
+                double result = calculatorSystem.calculate(toOperation(op), numbers.get(i), numbers.get(i + 1));
+                numbers.set(i, result);
+                numbers.remove(i + 1);
+                operators.remove(i);
+                continue;
+
+            }
+            i++;
+        }
+    
+
+
+        
+        double total = numbers.get(0);
+        for (i = 0; i < operators.size(); i++) {
+            total = calculatorSystem.calculate(toOperation(operators.get(i)), total, numbers.get(i + 1));
+            
+        }
+
+        return total;
     }
 
-    private static void applyTopOperation(Deque<Double> values, Deque<Character> operators, CalculatorSystem calculatorSystem) {
-        if (values.size() < 2 || operators.isEmpty()) {                             //演算子を適用するための値が不足している場合、例外をスローしてエラーメッセージを表示
-            throw new IllegalArgumentException("式の形式が正しくありません。");
+    private static double parseNumber(String token) {
+        try {
+            return Double.parseDouble(token);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("数値の形式が正しくありません: " + token);
         }
-
-        char operator = operators.pop();
-        double right = values.pop();
-        double left = values.pop();
-        Operation operation = toOperation(operator);
-        double result = calculatorSystem.calculate(operation, left, right);
-        values.push(result);
     }
 
     private static boolean isOperator(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/';
         
     }
-
-
-    private static int precedence(char operator) {
-        return (operator == '*' || operator == '/') ? 2 : 1;
-    }
-
     private static Operation toOperation(char operator) {
         return switch (operator) {
             case '+' -> new AddOperation();
