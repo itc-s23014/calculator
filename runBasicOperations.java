@@ -44,6 +44,7 @@ public class runBasicOperations {
             
             if (Character.isWhitespace(c)) {
                 i++;
+                
                 continue;
             }
 
@@ -91,7 +92,7 @@ public class runBasicOperations {
     }
 
     private static void applyTopOperation(Deque<Double> values, Deque<Character> operators, CalculatorSystem calculatorSystem) {
-        if (values.size() < 2 || operators.isEmpty()) {
+        if (values.size() < 2 || operators.isEmpty()) {                             //演算子を適用するための値が不足している場合、例外をスローしてエラーメッセージを表示
             throw new IllegalArgumentException("式の形式が正しくありません。");
         }
 

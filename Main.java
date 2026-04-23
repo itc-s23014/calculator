@@ -16,7 +16,7 @@ class Main {
             System.out.println("4.対数");
             System.out.println("0.終了");
             System.out.print("選択: ");
-
+        
             int ch = CalculatorRule.readInt(scanner);
             switch (ch) {
                 case 1:
