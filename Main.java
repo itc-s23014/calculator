@@ -1,6 +1,6 @@
 
 import java.util.Scanner;
-
+import java.math.BigDecimal;
 
 class Main {
     public static void main(String[] args) {
@@ -25,21 +25,21 @@ class Main {
                 case 2:
                     System.out.print("数値を入力してください: ");
                     double num = CalculatorRule.readDouble(scanner);
-                    System.out.println("結果: " + calculatorSystem.calculate(new Square_rootOperation(), num, 0));
+                    System.out.println("結果: " + calculatorSystem.calculate(new Square_rootOperation(), BigDecimal.valueOf(num), BigDecimal.ZERO));
                     break;
                 case 3:
                     System.out.print("底を入力してください: ");
                     double base = CalculatorRule.readDouble(scanner);
                     System.out.print("指数を入力してください: ");
                     double exponent = CalculatorRule.readDouble(scanner);
-                    System.out.println("結果: " + calculatorSystem.calculate(new PowerOperation(), base, exponent));
+                    System.out.println("結果: " + calculatorSystem.calculate(new PowerOperation(), BigDecimal.valueOf(base), BigDecimal.valueOf(exponent)));
                     break;
                 case 4:
                     System.out.print("真数を入力してください: ");
                     double argument = CalculatorRule.readDouble(scanner);
                     System.out.print("底を入力してください: ");
                     double logBase = CalculatorRule.readDouble(scanner);
-                    System.out.println("結果: " + calculatorSystem.calculate(new LogarithmOperation(), argument, logBase));
+                    System.out.println("結果: " + calculatorSystem.calculate(new LogarithmOperation(), BigDecimal.valueOf(argument), BigDecimal.valueOf(logBase)));
                     break;
                 case 0:
                     System.out.println("計算機を終了します。");

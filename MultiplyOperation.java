@@ -1,6 +1,7 @@
+import java.math.BigDecimal;
 class MultiplyOperation implements Operation {
     @Override
-    public double apply(double left, double right) {
-        return left * right;
+    public BigDecimal apply(BigDecimal left, BigDecimal right) {
+        return left.multiply(right);
     }
 }

@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
+import java.math.BigDecimal;
 
 public class runBasicOperations {
     static void execute(Scanner scanner, CalculatorSystem calculatorSystem) {
@@ -27,21 +28,21 @@ public class runBasicOperations {
             
 
             try {
-                double result = evaluateExpression(expression, calculatorSystem);
-                System.out.println("結果: " + result);
-            } catch (IllegalArgumentException | ArithmeticException e) {
+                BigDecimal result = evaluateExpression(expression, calculatorSystem);           //式を評価して計算結果を取得する
+                System.out.println("結果: " + result);                                      //計算結果を表示する
+            } catch (IllegalArgumentException | ArithmeticException e) {                    //式の評価中にエラーが発生した場合、エラーメッセージを表示して再度入力
                 System.out.println("エラー: " + e.getMessage());
             }
         }
     }
 
-    private static double evaluateExpression(String expression, CalculatorSystem calculatorSystem) {        //numberとoperatorを分割してリストに格納する
+    private static BigDecimal evaluateExpression(String expression, CalculatorSystem calculatorSystem) {        //numberとoperatorを分割してリストに格納する
         String expr = expression.replaceAll("\\s+", "");        //空白を削除
         if (expr.isEmpty()) {
             throw new IllegalArgumentException("式が空です。");
         }
 
-        List<Double> numbers = new ArrayList<>();          //数値を格納するリスト
+        List<BigDecimal> numbers = new ArrayList<>();          //数値を格納するリスト
         List<Character> operators = new ArrayList<>();     //演算子を格納するリスト 
         StringBuilder token = new StringBuilder();          //数値を一時的に格納するためのStringBuilder
 
@@ -75,7 +76,7 @@ public class runBasicOperations {
         while (i < operators.size()) {          //演算子リストをループして、優先順位の高い演算子（*と/）を先に処理する
             char op = operators.get(i);
             if (op == '*' || op == '/') {      //現在の演算子が*または/の場合、calculatorSystemを使用して計算を実行し、結果をnumbersリストに更新する
-                double result = calculatorSystem.calculate(toOperation(op), numbers.get(i), numbers.get(i + 1));
+                BigDecimal result = calculatorSystem.calculate(toOperation(op), numbers.get(i), numbers.get(i + 1));
                 numbers.set(i, result);     //計算結果で左側の数値を更新
                 numbers.remove(i + 1);      //計算結果で右側の数値を削除
                 operators.remove(i);        //現在の演算子を削除して、次の演算子に進む
@@ -88,18 +89,18 @@ public class runBasicOperations {
 
 
         
-        double total = numbers.get(0);              //優先順位の高い演算子を処理した後、残った演算子（+と-）を順番に処理して最終的な結果を計算する
+        BigDecimal total = numbers.get(0);              //優先順位の高い演算子を処理した後、残った演算子（+と-）を順番に処理して最終的な結果を計算する
         for (i = 0; i < operators.size(); i++) {
             total = calculatorSystem.calculate(toOperation(operators.get(i)), total, numbers.get(i + 1));
-            
         }
 
         return total;
     }
 
-    private static double parseNumber(String token) {               //  文字列を数値に変換するメソッド
+    private static BigDecimal parseNumber(String token) {               //  文字列を数値に変換するメソッド
         try {
-            return Double.parseDouble(token);
+
+            return new BigDecimal(token);  // 文字列から直接BigDecimalを生成して誤差を避ける
         } catch (NumberFormatException e) {
             throw new IllegalArgumentException("数値の形式が正しくありません: " + token);
         }

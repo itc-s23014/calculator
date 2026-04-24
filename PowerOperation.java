@@ -1,7 +1,9 @@
+import java.math.BigDecimal;
 public class PowerOperation implements Operation {
     @Override
-    public double apply(double left, double right) {
-        return Math.pow(left, right);
+    public BigDecimal apply(BigDecimal left, BigDecimal right) {
+        
+        return left.pow(right.intValue());
     }
 
     
