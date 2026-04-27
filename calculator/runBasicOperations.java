@@ -1,11 +1,19 @@
+package calculator;
+
 import java.util.Scanner;
 import java.util.ArrayList;
 import java.util.List;
 import java.math.BigDecimal;
 
+import calculator.interfaces.Operation;
+import calculator.operations.AddOperation;
+import calculator.operations.DivideOperation;
+import calculator.operations.MultiplyOperation;
+import calculator.operations.SubtractOperation;
+
 public class runBasicOperations {
-    static void execute(Scanner scanner, CalculatorSystem calculatorSystem) {
-        if (scanner.hasNextLine()) {
+    public static void execute(Scanner scanner, CalculatorSystem calculatorSystem) {           //ユーザーから四則演算の式を入力してもらい、計算結果を表示するメソッド
+        if (scanner.hasNextLine()) {                        //ユーザーが入力を行う前に、scannerのバッファをクリアするためのコード。これにより、前の入力が残っている場合でも正しく処理できるようになる。   
             scanner.nextLine();                                             
         }
 
@@ -43,8 +51,8 @@ public class runBasicOperations {
         }
 
         List<BigDecimal> numbers = new ArrayList<>();          //数値を格納するリスト
-        List<Character> operators = new ArrayList<>();     //演算子を格納するリスト 
-        StringBuilder token = new StringBuilder();          //数値を一時的に格納するためのStringBuilder
+        List<Character> operators = new ArrayList<>();        //演算子を格納するリスト 
+        StringBuilder token = new StringBuilder();           //数値を一時的に格納するためのStringBuilder
 
         for (int i = 0; i < expr.length(); i++) {   //式を1文字ずつ処理するループ
             char c = expr.charAt(i);               //現在の文字を取得
@@ -63,7 +71,7 @@ public class runBasicOperations {
 
             numbers.add(parseNumber(token.toString()));     //tokenを数値に変換してnumbersリストに追加
             token.setLength(0);                             //tokenをクリアして次の数値の処理に備える
-            operators.add(c);                               //演算子をoperatorsリストに追加
+            operators.add(c);                                //演算子をoperatorsリストに追加
         }
 
         if (token.length() == 0) {          //式の最後に数値がない場合、エラーをスロー
